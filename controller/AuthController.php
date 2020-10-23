@@ -29,11 +29,19 @@ class AuthController
                       window.location.href="/home";
                     </script>'; 
         }
-        elseif($stat['status'] === 403){
+        if($stat['status'] === 403){
             // view html
             echo '<script type="text/javascript">
+                  window.alert("'.$stat['message'].'");
                   window.location.href="/login";
                 </script>'; 
+        }
+        if($stat['status'] === 4031){
+            // view html
+            echo '<script type="text/javascript">
+                  window.alert("'.$stat['message'].'");
+                  window.location.href="/register";
+                </script>';
         }
     }
     

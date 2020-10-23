@@ -101,7 +101,6 @@
               <button class="btn btn-block btn-success" type="submit">Create Account</button>
             </div>
           </form>
-
           </div>
         </div>
       </div>

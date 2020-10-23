@@ -110,7 +110,7 @@ var app = new Vue({
     
         methods: {
             deleteData: function(id){
-                if(confirm("Are you sure you want to remove this data?"))
+                if(confirm("Are you sure you want to remove this task?"))
                 {
                     axios.post('api/task/delete', {
                     	action:'delete',

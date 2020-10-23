@@ -30,30 +30,36 @@ class UserService
      * @return string
      */
     public function serviceGetUserLogin($post=[]){
-        if(isset($post['email'])){
-            $this->user = self::$mdb->daoGetUser(['email'=>$post['email']])[0] ?? [];
-            
-            if(isset($this->user['email']) && $this->user['email'] === $post['email']){
-                // verify password
-                if (password_verify($post['password'], $this->user['password'])) {
-                    // generate JWT
-                    $this->jwt_array = Auth::generateJWT($this->user);
-                    
-                    // save to user table
-                    $this->updateUserToken();
-                    
-                    // return the token to frontend to set cookie at browser.
-                    return ['token'=>$this->jwt_array['token'],'status'=>200];
-                }
-                // password failed
-                else{
-                    // tell the user password failed
-                    return ['token'=>'', 'status'=>403, 'flag'=>'password', 'message'=>"Wrong password."];
-                }
-            }
+        
+        if(!isset($post['email'])){
+            return ['token'=>'', 'status'=>403, 'flag'=>'email', 'message'=>"Empty email."];
+        }
+        
+        $this->user = self::$mdb->daoGetUser(['email'=>$post['email']])[0] ?? [];
+        
+        if(!$this->user){
+            return ['token'=>'', 'status'=>4031, 'flag'=>'email', 'message'=>"Please register due to user not exist."];
+        }
+        
+        if(!isset($this->user['email']) && $this->user['email'] !== $post['email']){
             return ['token'=>'', 'status'=>403, 'flag'=>'password', 'flag'=>'email', 'message'=>"Wrong email."];
         }
-        return ['token'=>'', 'status'=>403, 'flag'=>'email', 'message'=>"Empty email."];
+        // verify password
+        if (password_verify($post['password'], $this->user['password'])) {
+            // generate JWT
+            $this->jwt_array = Auth::generateJWT($this->user);
+            
+            // save to user table
+            $this->updateUserToken();
+            
+            // return the token to frontend to set cookie at browser.
+            return ['token'=>$this->jwt_array['token'],'status'=>200];
+        }
+        // password failed
+        else{
+            // tell the user password failed
+            return ['token'=>'', 'status'=>403, 'flag'=>'password', 'message'=>"Wrong password."];
+        }
     }
     
     /**

@@ -17,6 +17,11 @@ Route::$view = true;
 // init the cookie for validation
 ViewController::$cookie = $_COOKIE;
 
+Route::add(ROUTE_PREFIX.'',function(){
+    $auth = new UserController;
+    echo $auth->login();
+});
+
 Route::add(ROUTE_PREFIX.'home',function(){
     $home = new HomeController;
     echo $home->index();
