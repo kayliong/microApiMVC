@@ -54,8 +54,9 @@ class UserDao extends Database{
      * @return boolean
      */
     public function daoStoreUser($params=[]){
-        // insert
-        return $this->insert($params);
+        // insert 
+        $result = $this->insert($params);
+        return $result;
     }
     
     /**

@@ -3,6 +3,7 @@
 /**
  * Class helper view
  * Load header, top, left, footer, right
+ * JS response for certain view
  * @author  Kay Liong
  */
 abstract class ViewHelper {
@@ -19,19 +20,22 @@ abstract class ViewHelper {
     /**
      * Load top menu bar
      */
-    static public function top(){
+    static public function top($user_info=[]){
         $topbar = APPDIR.'/views/include/top.php';
+        
+        EXTRACT($user_info, EXTR_SKIP);
         include $topbar;
     }
 
     /**
      * Load left side menu bar
      */
-    static public function sidebar($var=array()){
+    static public function sidebar($user_info=[]){
         $left_menu = APPDIR.'/views/include/sidebar.php';
+        
+        EXTRACT($user_info, EXTR_SKIP);
         include $left_menu;
     }
-
 
     /**
      * Load footer
@@ -40,106 +44,68 @@ abstract class ViewHelper {
         $footer = APPDIR.'/views/include/footer.php';
         include $footer;
     }
-    
-    /**
-     * Load customer bill & ship addresses in the invoice
-     * @param string $user_id
-     */
-    static public function aj_cust_addresses($user_id=''){
-        $invoice_addresses_form = APPDIR.'/views/invoices/invoice_address_form.phtml';
-        $addresses = Customers::getCustAddressFormByID(2);
-        extract($addresses, EXTR_SKIP);
-        include $invoice_addresses_form;
-    }
-    
-    /**
-     * Load invoice items layout
-     * Default load and via ajax
-     */
-    static public function aj_cust_items(){
-        $invoice_items_form = APPDIR.'/views/invoices/invoice_items_form.phtml';
-        $items = Service_Items::svcGetAllItems();
-        include $invoice_items_form;
-    }
-
 
     /**
-     * Load css files
-     * @param string $path  xxx.css
-     * @param string $return
+     * Login success JS return
+     * TODO: need to refactor to a proper VUEJs
+     * @param array $stat
      * @return string
      */
-    public static function css($path,$domain=false,$return=false){
-        if(empty($path)) return false;
-        if(!is_array($path)) $path = array($path);
-
-        $incdomain = empty($domain)?S3_STATIC:$domain;
-
-        foreach($path as $k=>$v){
-            $href = $incdomain.$v.'?v='.Service_Version::getVer();
-            $result = "<link href=\"{$href}\" type=\"text/css\" rel=\"stylesheet\" />\r\n";
-            if ($return) {
-                return $result;
-            } else {
-                echo $result;
-            }
-        }
-    }
-
-
-    /**
-     * load js files
-     * @param string $path  xxx.css
-     * @param string $return
-     * @return string
-     */
-    public static function js($path,$domain=false,$return=false){
-        if(empty($path)) return false;
-        if(!is_array($path)) $path = array($path);
-
-        $incdomain = empty($domain)?S3_STATIC:$domain;
-
-        foreach($path as $k=>$v){
-            $href = $incdomain.$v.'?v='.Service_Version::getVerFileModified($incdomain.$v);
-            $result = "<script type=\"text/javascript\" src=\"{$href}\"></script>\r\n";
-            if ($return) {
-                return $result;
-            } else {
-                echo $result;
-            }
-        }
+    public static function authUserLoginSuccessJsRes($stat=[]){
+        return '<script type="text/javascript">
+                      var d = new Date();
+                      d.setTime(d.getTime() + (60*60*1000));
+                      var expires = "expires="+ d.toUTCString(); console.log(expires);
+                      document.cookie = "'.VARIABLES::JWT_NAME.'" + "=" + "'.$stat["token"].'" + ";" + expires + ";path=/";
+                      window.location.href="/home";
+                    </script>';
     }
     
     /**
-     * Load block
-     *
-     * @param string $_tpl path to the view
-     * @param array  $_var Register template variables inside the block, key is the variable name, value is the corresponding value。
+     * Login errors
+     * TODO: need to refactor to a proper VUEJs
+     * @param string $msg
+     * @param string $module
+     * @return string
      */
-    static public function loadBlock($_tpl, array $_var = array()) {
-        extract($_var, EXTR_SKIP);
-        include APP_PATH .'/application/views/' . $_tpl;
+    public static function authUserLoginErrorJsRes($msg='', $module=''){
+        return '<script type="text/javascript">
+                  window.alert("'.$msg.'");
+                  window.location.href="/'.$module.'";
+                </script>';
     }
-
-    static public function loadToastMessage($status,$msg,$is_script=true){
-        if($is_script == false){
-            $result = "";
-        }else{
-            $result = "<script>" ;
-        }
-        $result .= "$.toast({".
-                   "heading: '".$status."',".
-                   "text: '".$msg."',".
-                   "position: 'top-center',".
-                    "loaderBg: '#ff6849',".
-                    "icon: '".$status."',".
-                    "hideAfter: 1000,".
-                    "stack: 4".
-                "})";
-        if($is_script == false){
-            return $result;
-        }
-        $result .= "</script>" ;
-        return $result ;
+    
+    /**
+     * Cookie expired, set cookie to empty and logout
+     * TODO: need to refactor to a proper VUEJs
+     * @param string $module
+     * @return string
+     */
+    public static function authValidateLoginErrorJsRes($module='login'){
+        return '<script type="text/javascript">
+                  document.cookie = "'.VARIABLES::JWT_NAME.'" + "=" + "" + ";" + 0 + ";path=/";
+                  window.location.href="/'.$module.'";
+                </script>';
+    }
+    
+    public static function userLogoutJsRes($module='login'){
+        return '<script type="text/javascript">
+                  document.cookie = "'.VARIABLES::JWT_NAME.'" + "=" + "" + ";" + 0 + ";path=/";
+                  window.location.href="/'.$module.'";
+                </script>'; 
+    }
+    
+    public static function registerUserWrongPasswordJsRes(){
+        return '<script type="text/javascript">
+                      window.alert("Password not match");
+                      window.location.href="/register";
+                  </script>'; 
+    }
+    
+    public static function registerUserSuccessJsRes(){
+        echo '<script type="text/javascript">
+                      window.alert("Register successful. Please login.");
+                      window.location.href="/login";
+                  </script>'; 
     }
 }

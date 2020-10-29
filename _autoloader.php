@@ -39,8 +39,8 @@ spl_autoload_register(function($class_name) {
         include_once APPDIR.'/models/dao/'.$class_name.'.php';
     }
     // check class file exist to load
-    elseif(is_file(APPDIR.'/classes/'.strtolower($class_name).'.php')){
-        include_once APPDIR.'/classes/'.strtolower($class_name).'.php';
+    elseif(is_file(APPDIR.'/library/classes/'.strtolower($class_name).'.php')){
+        include_once APPDIR.'/library/classes/'.strtolower($class_name).'.php';
     }
     // check class file exist to load
     elseif(is_file(APPDIR.'/controller/'.$class_name.'.php')){

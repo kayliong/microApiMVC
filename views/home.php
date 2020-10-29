@@ -5,7 +5,7 @@
 								<div class="card-header">Welcome</div>
 
 								<div class="card-body">Welcome 
-									<strong><?php echo ViewController::$user['given_name'];?></strong>
+									<strong><?php echo $given_name ?? 'NONAME';?></strong>
 								</div>
 							</div>
 						</div>

@@ -17,13 +17,13 @@ class TaskController extends ViewController
     /**
      * constructor
      */
-    public function __construct(){
+    public function __construct($user=[]){
         
         // parent
-        parent::__construct();
+        parent::__construct($user);
         
         // init TaskService
-        $this->service_task = new TaskService;
+        $this->service_task = new TaskService($this->user_info);
         
         // variables
         $this->type = VARIABLES::TYPE;
@@ -36,31 +36,30 @@ class TaskController extends ViewController
      */
     public function index(){ 
         
-        $records = $this->service_task->getAllTaskByUser();
-        
-        if(count($records) > 0){
-            // view html
-            $index = html_entity_decode( APPDIR.'/views/task/index.php' );
-        }
-        else{
-            // show landing page for task
-            $index = html_entity_decode( APPDIR.'/views/task/home.php' );
-        }
-        
-        $count = [];
-        if(!empty($records)){
-            // process count
-            $count['open'] = array_count_values(array_column($records, 'status'))[0] ?? 0;
-            $count['inprogress'] = array_count_values(array_column($records, 'status'))[1] ?? 0;
-            $count['completed'] = array_count_values(array_column($records, 'status'))[2] ?? 0;
+        if(!empty($this->user_info)){
+            $records = $this->service_task->getAllTaskByUser($this->user_info['id']);
             
+            if(count($records) > 0){
+                // view html
+                $index = html_entity_decode( APPDIR.'/views/task/index.php' );
+            }
+            else{
+                // show landing page for task
+                $index = html_entity_decode( APPDIR.'/views/task/home.php' );
+            }
+            
+            $count = [];
+            if(!empty($records)){
+                // process count
+                $count['open'] = array_count_values(array_column($records, 'status'))[0] ?? 0;
+                $count['inprogress'] = array_count_values(array_column($records, 'status'))[1] ?? 0;
+                $count['completed'] = array_count_values(array_column($records, 'status'))[2] ?? 0;
+                extract($records,EXTR_SKIP);
+            }
+            
+            include $index;
         }
-        extract($records,EXTR_SKIP);
-        extract($this->type,EXTR_SKIP);
-        extract($this->priority,EXTR_SKIP);
-        extract($this->status,EXTR_SKIP);
         
-        include $index;
     }  
     
     /**
@@ -70,13 +69,14 @@ class TaskController extends ViewController
         // view html
         $create = html_entity_decode( APPDIR.'/views/task/create.php' );
         
-        extract($this->type,EXTR_SKIP);
-        extract($this->priority,EXTR_SKIP);
-        extract($this->status,EXTR_SKIP);
-        
         include $create;
     }  
     
+    /**
+     * Send the new task to Store (insert)
+     * @param array $post
+     * @return string
+     */
     public function store($post=[]){
         $stat = $this->service_task->storeTask($post);
         
@@ -107,10 +107,16 @@ class TaskController extends ViewController
         extract($this->type,EXTR_SKIP);
         extract($this->priority,EXTR_SKIP);
         extract($this->status,EXTR_SKIP);
+        extract($this->user_info, EXTR_SKIP);
         
         include $edit;
     }    
     
+    /**
+     * Send task to update
+     * @param array $post
+     * @return string
+     */
     public function update($post=[]){
         $stat = $this->service_task->updateTaskById($post);
         

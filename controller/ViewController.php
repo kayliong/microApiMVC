@@ -6,31 +6,37 @@
  */
 class ViewController
 {
-    public static $cookie=[];
-    private static $stat=[];
-    public static $user=[];
+    public $user_obj;
+    public $user_info=[];
     
     /**
      * Constructor
+     * Check login valid, otherwise return to login
      * Include header, sidebar and top
      */
-    public function __construct(){
-        // validate login with cookie
-        $auth = new AuthController;
-        if(isset(self::$cookie[VARIABLES::JWT_NAME])){
-            $auth->validateLogin(self::$cookie[VARIABLES::JWT_NAME]);
-            self::$stat = Auth::validateJwt(self::$cookie[VARIABLES::JWT_NAME]);
+    public function __construct($user=[]){
+
+        //print_r( $user->stat['status'] !==200 );die();
+        if( empty($user->user) || !isset($user->stat['status']) || $user->stat['status'] !== 200){
+            // return to login screen if key not valid
+            echo ViewHelper::authValidateLoginErrorJsRes();
+        }
+
+        // user
+        if(!empty($user->user)){
+            $this->user_obj = $user;
             
-            // query user data
-            $user_dao = new UserDao; 
-            self::$user = $user_dao->daoGetUser(["email"=>self::$stat["data"]->email])[0] ?? [];
+            // set the user info array
+            $this->user_info= $user->user;
+            unset($this->user_info['token']);
+            unset($this->user_info['password']);
         }
         
         // check route view set to true, include headers or footer
         if(Route::$view === true){
             ViewHelper::header();
-            ViewHelper::sidebar();
-            ViewHelper::top();
+            ViewHelper::sidebar($this->user_info);
+            ViewHelper::top($this->user_info);
         }
     }
     

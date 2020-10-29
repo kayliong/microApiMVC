@@ -4,14 +4,14 @@
             <div class="card-header">
 				<i class="fa fa-align-justify"></i> <strong>Task List</strong>
 				<i class="fa fa-align-justify"></i> &nbsp;
-				<i class="fa fa-align-justify"></i> <span class="badge badge-success" v-show="show">(<?php echo $count['open']??0; ?>)Open</span>
-				<i class="fa fa-align-justify"></i> <button class="badge badge-success" v-show="!show" @click="show = !show">(<?php echo $count['open']??0; ?>) Open</button>
+				<i class="fa fa-align-justify"></i> <span class="badge badge-success" v-show="show">(<?php echo $count['open'] ?: 0; ?>)Open</span>
+				<i class="fa fa-align-justify"></i> <button class="badge badge-success" v-show="!show" @click="show = !show">(<?php echo $count['open']?: 0; ?>) Open</button>
 				<i class="fa fa-align-justify"></i> &nbsp;
-				<i class="fa fa-align-justify"></i> <span class="badge badge-warning" v-show="show">(<?php echo $count['inprogress']; ?>)In-progress</span>
-				<i class="fa fa-align-justify"></i> <button class="badge badge-warning" v-show="!show" @click="show = !show">(<?php echo $count['inprogress']; ?>)In-progress</button>
+				<i class="fa fa-align-justify"></i> <span class="badge badge-warning" v-show="show">(<?php echo $count['inprogress'] ?: 0; ?>)In-progress</span>
+				<i class="fa fa-align-justify"></i> <button class="badge badge-warning" v-show="!show" @click="show = !show">(<?php echo $count['inprogress'] ?: 0; ?>)In-progress</button>
 				<i class="fa fa-align-justify"></i> &nbsp;
-				<i class="fa fa-align-justify"></i> <span class="badge badge-secondary" v-show="!show">(<?php echo $count['completed']; ?>) Completed </span> 
-				<i class="fa fa-align-justify"></i> <button class="badge badge-secondary" v-show="show" @click="show = !show">(<?php echo $count['completed']; ?>) Completed </button>
+				<i class="fa fa-align-justify"></i> <span class="badge badge-secondary" v-show="!show">(<?php echo $count['completed'] ?: 0; ?>) Completed </span> 
+				<i class="fa fa-align-justify"></i> <button class="badge badge-secondary" v-show="show" @click="show = !show">(<?php echo $count['completed'] ?: 0; ?>) Completed </button>
 			</div>
 
 			<div class="form-actions col-md-3">

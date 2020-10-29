@@ -48,11 +48,23 @@
               <h1>Register</h1>
               <p class="text-muted">Create your account</p>
               <div class="input-group mb-3">
+              	<div class="input-group mb-3">
+                    <div class="input-group-prepend"><span class="input-group-text"> email &nbsp;
+                        <svg class="c-icon">
+                          <use xlink:href="../../vendor/coreui/vendors/@coreui/icons/svg/free.svg#cil-envelope-open"></use>
+                        </svg></span></div>
+                    <input id="email" type="email" class="form-control" name="email" value="" required autocomplete="email" autofocus>
+    
+                                        <span class="invalid-feedback" role="alert" v-if="email_error_show">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                  </div>
+              
                 <div class="input-group-prepend"><span class="input-group-text"> Given name &nbsp;
                     <svg class="c-icon">
                       <use xlink:href="../../vendor/coreui/vendors/@coreui/icons/svg/free.svg#cil-user"></use>
                     </svg></span></div>
-                <input id="given_name" type="text" class="form-control" name="given_name" value="" required autocomplete="name" autofocus>
+                <input id="given_name" type="text" class="form-control" name="given_name" value="" required autocomplete="name">
 
                                     <span class="invalid-feedback" role="alert" v-if="name_error_show">
                                         <strong>{{ $message }}</strong>
@@ -66,17 +78,6 @@
                 <input id="surname" type="text" class="form-control" name="surname" value="" required autocomplete="name" autofocus>
 
                                     <span class="invalid-feedback" role="alert" v-if="name_error_show">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-              </div>
-              <div class="input-group mb-3">
-                <div class="input-group-prepend"><span class="input-group-text"> email &nbsp;
-                    <svg class="c-icon">
-                      <use xlink:href="../../vendor/coreui/vendors/@coreui/icons/svg/free.svg#cil-envelope-open"></use>
-                    </svg></span></div>
-                <input id="email" type="email" class="form-control" name="email" value="" required autocomplete="email">
-
-                                    <span class="invalid-feedback" role="alert" v-if="email_error_show">
                                         <strong>{{ $message }}</strong>
                                     </span>
               </div>

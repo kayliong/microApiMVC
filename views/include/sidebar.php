@@ -1,6 +1,6 @@
 <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
   <div class="c-sidebar-brand d-lg-down-none">
-  	<strong><?php echo ViewController::$user['given_name']. " ".  ViewController::$user['surname'];?></strong>
+  	<strong>Micro MVC API</strong>
   </div>
   <ul class="c-sidebar-nav">
     <li class="c-sidebar-nav-title">Dashboard</li>
