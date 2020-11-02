@@ -1,6 +1,7 @@
 <?php
 use \Firebase\JWT\JWT;
 date_default_timezone_set("UTC");
+
 /**
  * Auth related functions class 
  * @author kayliongmac11air
@@ -31,8 +32,9 @@ class Auth
                     "email" => $user_data['email']
                 )
             );
+            
             // generate jwt
-            self::$jwt = JWT::encode($token_array, VARIABLES::JWT_KEY);
+            self::$jwt = self::encodeJWT($token_array);
             
             // set cookie
             // Disable for now, not needed for server cookie
@@ -101,14 +103,27 @@ class Auth
         return time(); // plus 3 secs
     }
     
-    public static function authSerialize( $obj )
+    /**
+     * serialize the token string
+     * @param array $obj
+     * @return string
+     */
+    public static function authSerialize( $arr )
     {
-        return md5(gzcompress(serialize($obj)));
+        return gzdeflate(serialize($arr));
     }
     
-    
+    /**
+     * un serialize the token string
+     * @param string $txt
+     * @return array
+     */
     public static function authUnSerialize($txt)
     {
-        return unserialize(gzuncompress(md5($txt)));
+        return unserialize(gzinflate($txt));
+    }
+    
+    public static function encodeJWT($token_array=[]){
+        return JWT::encode($token_array, VARIABLES::JWT_KEY);
     }
 }

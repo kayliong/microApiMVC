@@ -13,5 +13,6 @@
 	RewriteCond %{REQUEST_FILENAME} !-d
 	 
 	# Push every request to index.php
+	Options FollowSymLinks
 	RewriteRule ^(.*)$ index.php [QSA]
 </IfModule>

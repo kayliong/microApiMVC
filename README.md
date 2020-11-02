@@ -65,6 +65,9 @@ This is a flexible micro framework with Models, Views and Classes. Suitable for 
 # <h2> Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+# <h2> TODO
+- PSR-7
+- Eloquent Database
 
 # <h2> License
 [MIT](https://choosealicense.com/licenses/mit/)

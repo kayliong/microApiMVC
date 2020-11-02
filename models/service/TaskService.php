@@ -7,8 +7,17 @@
 class TaskService
 {
     private static $mdb;
+    public $user_info;
     
-    public function __construct(){
+    /**
+     * Constructor
+     * @param array $user_info
+     */
+    public function __construct($user_info=[]){
+        // setting user info
+        $this->user_info = $user_info;
+        
+        // dao init
         self::$mdb = new TaskDao();
     }
 	
@@ -39,6 +48,7 @@ class TaskService
 	 */
 	public function getAllTaskByUser($user_id=""){
 	    
+	    $user_id = $user_id ?: $this->user_info['id'];
 	    $active_task = self::$mdb->daoGetAllTaskByUser($user_id);
 	    
 	    return $active_task;
@@ -94,7 +104,7 @@ class TaskService
 	    $post['created_at'] = date('Y-m-d H:i:s');
 	    
 	    // add user ID
-	    $post['user_id'] = AuthController::$stat['data']->id ?: $post['user_id'];
+	    $post['user_id'] = $this->user_info['id'];
 	    
 	    // store to db
 	    if( self::$mdb->daoStoreTask($post) ){

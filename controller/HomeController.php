@@ -6,12 +6,13 @@
  *
  */
 class HomeController extends ViewController
-{
+{    
     /**
      * constructor
      */
-    public function __construct(){
-        parent::__construct();
+    public function __construct($user=[]){
+        
+        parent::__construct($user);
     }
     
     /**
@@ -21,7 +22,8 @@ class HomeController extends ViewController
      */
     public function index(){ 
         $index = html_entity_decode( APPDIR.'/views/home.php' );
-
+        
+        EXTRACT($this->user_info, EXTR_SKIP);
         include $index;
     }    
 }

@@ -2,7 +2,7 @@
     <div class="col-12 grid-margin stretch-card">
     	<div class="card">
     		<div class="card-body">
-    			<h4 class="card-title">Edit Task</h4>
+    			<h4 class="card-title">New Task</h4>
     			<form class="forms-sample" method="POST" action="/task/store">
     				<div class="row">
     					<div class="col-6">

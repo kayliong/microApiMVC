@@ -31,35 +31,58 @@ class UserService
      */
     public function serviceGetUserLogin($post=[]){
         
+        // if no email posted, return empty email error
         if(!isset($post['email'])){
             return ['token'=>'', 'status'=>403, 'flag'=>'email', 'message'=>"Empty email."];
         }
         
+        // get user by email 
         $this->user = self::$mdb->daoGetUser(['email'=>$post['email']])[0] ?? [];
         
+        // user not exist, return error "user not exist"
         if(!$this->user){
             return ['token'=>'', 'status'=>4031, 'flag'=>'email', 'message'=>"Please register due to user not exist."];
         }
         
+        // email not the same as posted "seriously got query result? TODO"
         if(!isset($this->user['email']) && $this->user['email'] !== $post['email']){
             return ['token'=>'', 'status'=>403, 'flag'=>'password', 'flag'=>'email', 'message'=>"Wrong email."];
         }
+        
+        // 
         // verify password
-        if (password_verify($post['password'], $this->user['password'])) {
-            // generate JWT
+        if (!password_verify($post['password'], $this->user['password'])) {
+            // tell the user password failed
+            return ['token'=>'', 'status'=>403, 'flag'=>'password', 'message'=>"Wrong password."];
+        }
+        
+        // Multi login true
+        $regen_jwt = [];
+        $stat = [];
+        if(VARIABLES::JWT_MULTI_LOGIN){
+            if(!empty($this->user['token'])){
+                // to check existing token validity, regen from token string
+                $token_array = Auth::authUnSerialize($this->user['token']);
+                $regen_jwt = Auth::encodeJWT($token_array);
+                
+                // validate after regen token
+                $stat = Auth::validateJwt($regen_jwt);
+            }
+        }
+
+        if((isset($stat['status']) && $stat['status'] === 401) || empty($stat)){
+            // generate new JWT
             $this->jwt_array = Auth::generateJWT($this->user);
             
             // save to user table
             $this->updateUserToken();
             
-            // return the token to frontend to set cookie at browser.
-            return ['token'=>$this->jwt_array['token'],'status'=>200];
+            // reset $regen_jwt
+            $regen_jwt = [];
         }
-        // password failed
-        else{
-            // tell the user password failed
-            return ['token'=>'', 'status'=>403, 'flag'=>'password', 'message'=>"Wrong password."];
-        }
+        
+        // return the token to frontend to set cookie at browser.
+        return ['token'=>$this->jwt_array['token'] ?: $regen_jwt,'status'=>200];
     }
     
     /**
@@ -69,23 +92,18 @@ class UserService
     public function updateUserToken($jwt_string=null){
         if(isset($this->jwt_array['string'])){
             // save token to user table
-            self::$mdb->daoUpdateUserToken( 
-                                        ['token'=>$this->jwt_array['string']], 
-                                        ['id'=>$this->user['id'],'email'=>$this->user['email']]
-                                          );
+            self::$mdb->daoUpdateUserToken( ['token'=>$this->jwt_array['string']], ['id'=>$this->user['id'],'email'=>$this->user['email']] );
         }
     }
     
     /**
      * TODO: pending
+     * TODO: remove user token string when logout
      * @param array $user
      */
-    public function updateLogout($user){
+    public function updateLogout($user_info){
             // update token to empty in user table
-            self::$mdb->daoUpdateUserToken(
-                                        ['token'=>''],
-                                        ['id'=>$this->user['id'],'email'=>$this->user['email']]
-                                        );
+        self::$mdb->daoUpdateUserToken( ['token'=>''], ['id'=>$user_info['id'],'email'=>$user_info['email']] );
     }
     
     /**
@@ -126,6 +144,11 @@ class UserService
         return self::$mdb->daoGetUser($param)[0] ?? [];
     }
     
+    /**
+     * Delete user by ID
+     * @param int $id
+     * @return array
+     */
     public function serviceDeleteUserByID($id){
         return self::$mdb->daoDeleteUserById(['id'=>$id])[0] ?? [];
     }
