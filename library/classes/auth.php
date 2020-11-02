@@ -1,6 +1,7 @@
 <?php
 use \Firebase\JWT\JWT;
 date_default_timezone_set("UTC");
+
 /**
  * Auth related functions class 
  * @author kayliongmac11air
